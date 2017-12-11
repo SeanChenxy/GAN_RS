@@ -7,10 +7,10 @@
 Our scheme adaptively restore underwater vision in real time. During training, FRS serve as the ground truth, but the output is more superior owing to our improvements.
 
 For underwater vision, our contribution contains:
-* Underwater branch in $D$: distinguish an image is aquatic or not
-* Underwater index loss: what $D$ shuold learn and $G$ shuold reduce
+* Underwater branch in D: distinguish an image is aquatic or not
+* Underwater index loss: what D shuold learn and G shuold reduce
 * DCP loss: encourage the output to be similar with the ground truth in terms of dark channel
-* Multi-stage loss stratage: When to ally the underwater index loss
+* Multi-stage loss stratage: when to ally the underwater index loss
 
 If you use this code for your research, please cite:
 
