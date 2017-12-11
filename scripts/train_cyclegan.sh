@@ -1,0 +1,12 @@
+pythonc3 ../train.py \
+--dataroot ../datasets/underwater \
+--name underwater_cyclegan \
+--model cycle_gan \
+--dataset_mode unaligned \
+--pool_size 50 \
+--no_dropout \
+--display_id 6 \
+--checkpoints_dir ../checkpoints \
+--gpu_ids '0,1' \
+--batchSize 4 \
+--epoch_count 1

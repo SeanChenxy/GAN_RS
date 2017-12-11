@@ -1,0 +1,15 @@
+pythonc3 ../test.py \
+--dataroot ../datasets/underwater/AB640 \
+--name underwater_pix2pix512_unet256GmultioutD_selectD_lsgan \
+--model pix2pix \
+--which_model_netG unet_256 \
+--which_direction AtoB \
+--dataset_mode aligned \
+--norm batch \
+--results_dir ../results/debug \
+--checkpoints_dir ../checkpoints/ \
+--which_direction AtoB \
+--which_epoch latest \
+--loadSize 512 \
+--fineSize 512 \
+--display_winsize 512

@@ -1,0 +1,15 @@
+pythonc3 ../test.py \
+--dataroot ../datasets/underwater/A640/test2 \
+--name underwater_pix2pix512_Res9Gmultibranch46D_selectDdcpL1a30lu5gan1_lsgan \
+--model test \
+--which_model_netG 'resnet_9blocks' \
+--which_direction AtoB \
+--dataset_mode single \
+--norm batch \
+--results_dir ../results/tmp \
+--checkpoints_dir ../checkpoints/Compare \
+--how_many 140 \
+--which_epoch 20 \
+--loadSize 512 \
+--fineSize 512 \
+--gpu_id '1'

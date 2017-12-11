@@ -1,0 +1,31 @@
+CUDA_VISIBLE_DEVICES='0,1' pythonc3 ../train.py \
+--dataroot ../datasets/underwater/AB640 \
+--name underwater_pix2pix512_Res9Gmultibranch45D_selectDdcpL1a30lu5gan1_lsgan \
+--model pix2pix \
+--which_model_netG 'resnet_9blocks' \
+--which_direction AtoB \
+--dataset_mode aligned \
+--norm batch \
+--pool_size 0 \
+--checkpoints_dir ../checkpoints/test \
+--save_epoch_freq 5 \
+--display_port 8097 \
+--batchSize 2 \
+--display_winsize 512 \
+--display_id 1 \
+--display_freq 100 \
+--print_freq 100 \
+--lr_policy 'lambda' \
+--lr 0.0002 \
+--niter 50 \
+--niter_decay 50 \
+--gpu_ids '0,1' \
+--loadSize 530 \
+--fineSize 512 \
+--which_model_netD 'multibranch' \
+--which_mode_netD 'select' \
+--n_layers_D 4 \
+--n_layers_U 5 \
+--lambda_A 30 \
+--lambda_U 5 \
+--lambda_GAN 1

@@ -1,0 +1,11 @@
+pythonc3 ../test.py \
+--dataroot ../datasets/underwater \
+--name underwater_cyclegan \
+--model cycle_gan \
+--phase test \
+--no_dropout \
+--results_dir ../results/ \
+--checkpoints_dir ../checkpoints/ \
+--which_epoch latest \
+--loadSize 512 \
+--fineSize 512
