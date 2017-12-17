@@ -24,8 +24,7 @@ with open(loss_file, 'r') as f:
             D_real.append(float(part[13]))
             D_fake.append(float(part[15]))
             D_underwater.append(float(part[17]))
-# G_GAN = int(G_GAN)
-# print(len(G_GAN))
+
 D_GAN = (np.array(D_real) + np.array(D_fake))*0.5
 G_GAN_ave = G_GAN.copy()
 D_fake_ave = D_GAN.copy()
@@ -42,17 +41,6 @@ for i in range(0,len(G_GAN)):
         D_fake_ave[i] = np.mean(D_fake[i - 50:i+1])
         G_UI_ave[i] = np.mean(G_underwater[i - 50:i+1])
         D_UI_ave[i] = np.mean(D_underwater[i - 50:i+1])
-# for i in range(0, 50):
-#     G_GAN_ave[i] = G_GAN_ave[50]
-#     D_fake_ave[i] = D_fake_ave[50]
-#     G_UI_ave[i] = G_UI_ave[50]
-#     D_UI_ave[i] = D_UI_ave[50]
-# for i in range(len(G_GAN)-30, len(G_GAN)):
-#     G_GAN_ave[i] = G_GAN_ave[len(G_GAN)-30-1]
-#     D_fake_ave[i] = D_fake_ave[len(G_GAN) - 30 - 1]
-#     G_UI_ave[i] = G_UI_ave[len(G_GAN) - 30 - 1]
-#     D_UI_ave[i] = D_UI_ave[len(G_GAN) - 30 - 1]
-
 
 lit = np.linspace(0, stop_eopch+1, len(G_GAN))
 
@@ -72,7 +60,7 @@ D_GAN_plt, = plt.plot(lit, D_fake_ave, color='green',linewidth=2.0)
 plt.xlim(0,stop_eopch)
 plt.xlabel('epoch',fontdict=font_label)
 plt.ylabel('loss',fontdict=font_label)
-plt.legend([G_GAN_plt, D_GAN_plt], [r'$G$:$\mathcal{L}_{lscGAN}$', r'$D$:$\mathcal{L}_{lscGAN}$'], loc='upper right',fontsize=12)
+plt.legend([G_GAN_plt, D_GAN_plt], ['G: Ad-loss', 'D: Ad-loss'], loc='upper right',fontsize=12)
 
 ax=plt.subplot(2,1,2)
 ax.grid(True, which='both', alpha=0.2)
@@ -81,15 +69,12 @@ G_underwater_plt, = plt.plot(lit, G_UI_ave, color='blue',linewidth=2.0)
 plt.xlim(0,stop_eopch)
 plt.xlabel('epoch', fontdict=font_label)
 plt.ylabel('loss', fontdict=font_label)
-# plt.legend([G_underwater_plt], [r'$G$:$\mathcal{L}_{UI}$'], loc='upper right',fontsize=12)
 
-# ax=plt.subplot(4,1,4)
-# ax.grid(True, which='both', alpha=0.2)
 plt.plot(lit, D_underwater, color='m', alpha=0.5)
 D_underwater_plt, = plt.plot(lit, D_UI_ave, color='m',linewidth=2.0)
 plt.xlim(0,stop_eopch)
-# plt.ylim(0,3)
 plt.xlabel('epoch', fontdict=font_label)
 plt.ylabel('loss', fontdict=font_label)
-plt.legend([G_underwater_plt, D_underwater_plt], [r'$G$:$\mathcal{L}_{UI}$', r'$D$:$\mathcal{L}_{UI}$'], loc='upper right',fontsize=12)
+plt.legend([G_underwater_plt, D_underwater_plt], ['G: U-loss', 'D: U-loss'], loc='upper right',fontsize=12)
+
 plt.show()

@@ -78,11 +78,11 @@ for j, file in enumerate(pre_list):
         plt.xticks([-0.4,  0.4],['green', 'red'], fontsize=10)
         plt.yticks([-0.4,  0.4], ['blue', 'yellow'], fontsize=10)
         if i==0:
-            ax.set_title('Original frame: $\Gamma=$'+str(ui), fontdict=font_label)
+            ax.set_title('Original frame: U='+str(ui), fontdict=font_label)
         elif i==1:
-            ax.set_title(r'FRS: $\Gamma=$'+str(ui), fontdict=font_label)
+            ax.set_title('FRS: U='+str(ui), fontdict=font_label)
         else:
-            ax.set_title(r'GAN-RS: $\Gamma=$'+str(ui), fontdict=font_label)
+            ax.set_title('GAN-RS: U='+str(ui), fontdict=font_label)
         ax.spines['right'].set_color('none')
         ax.spines['top'].set_color('none')
         ax.xaxis.set_ticks_position('bottom')

@@ -31,7 +31,7 @@ for j, file in enumerate(image_name_list):
     # cv2.imshow('test', real_A)
     # cv2.waitKey(0)
     image_list = [real_A, real_B, fake_B, ad_real, ad_fake, ui_real, ui_fake]
-    name_list = ['Origin', 'FRS', 'GAN-RS', 'FRS Ad map', 'GAN-RS Ad map', r'FRS $\Gamma$ map', r'GAN-RS $\Gamma$ map']
+    name_list = ['Origin', 'FRS', 'GAN-RS', 'FRS Ad-map', 'GAN-RS Ad-map', 'FRS U-map', 'GAN-RS U-map']
     for i, img in enumerate(image_list):
         # if i<3:
         ax = plt.subplot(gs[j, i])

@@ -12,9 +12,9 @@ For underwater vision, our contribution contains:
 * DCP loss: encourage the output to be similar with the ground truth in terms of dark channel
 * Multi-stage loss stratage: when to ally the underwater index loss
 
-If you use this code for your research, please cite:
+This project is based on [pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix), and the video result is located at [GAN-RS](https://www.youtube.com/watch?v=JKCedUhAM6M). If you use this code for your research, please cite:
 
-Towards Qualitative Advancement of Underwater Machine Vision with Generative Adversarial Networks
+Towards Qualitaty Advancement of Underwater Machine Vision with Generative Adversarial Networks
 Xingyu Chen, Junzhi Yu, Shihan Kong, Zhengxing Wu, Xi Fang, Li Wen
 arXiv preprint arXiv:1712.00736 (2017).
 

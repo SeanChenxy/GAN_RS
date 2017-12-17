@@ -9,7 +9,7 @@ import cv2
 font_label = {'family' : 'sans-serif',
         'color'  : 'black',
         'weight' : 'normal',
-        'size'   : 10,
+        'size'   : 12,
         }
 
 dir_path = '../resultsD/'
@@ -61,9 +61,9 @@ for i, itm in enumerate(image_list):
     plt.imshow(cv2.cvtColor(itm, cv2.COLOR_BGR2RGB))
     # plt.rc('text', usetex = True)
     if i == 0:
-        plt.xlabel('FRS' + '; ' + r'$\Gamma$=' + str(underwater_index[i]), fontdict=font_label)
+        plt.xlabel('FRS' + '; ' + 'U=' + str(underwater_index[i]), fontdict=font_label)
     else:
-        plt.xlabel('epoch: '+ str(epoches[i-1]) +'; ' +r'$\Gamma$=' + str(underwater_index[i]), fontdict=font_label)
+        plt.xlabel('epoch: '+ str(epoches[i-1]) +'; ' +'U=' + str(underwater_index[i]), fontdict=font_label)
     ax.spines['right'].set_color('none')
     ax.spines['left'].set_color('none')
     ax.spines['bottom'].set_color('none')
