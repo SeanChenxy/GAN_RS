@@ -14,8 +14,8 @@ For underwater vision, our contribution contains:
 
 This project is based on [pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix), and the video result is located at [GAN-RS](https://www.youtube.com/watch?v=JKCedUhAM6M). If you use this code for your research, please cite:
 
-Towards Qualitaty Advancement of Underwater Machine Vision with Generative Adversarial Networks
-Xingyu Chen, Junzhi Yu, Shihan Kong, Zhengxing Wu, Xi Fang, Li Wen
+Towards Qualitaty Advancement of Underwater Machine Vision with Generative Adversarial Networks,
+Xingyu Chen, Junzhi Yu, Shihan Kong, Zhengxing Wu, Xi Fang, Li Wen,
 arXiv preprint arXiv:1712.00736 (2017).
 
 
