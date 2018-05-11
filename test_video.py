@@ -17,9 +17,10 @@ opt.no_flip = True  # no flip
 
 model = create_model(opt)
 cap = cv2.VideoCapture(opt.dataroot)
+# print(cap.isOpened())
 if opt.writename:
     # writer = cv2.VideoCapture(opt.writename)
-    fps = 50  # 视频帧率
+    fps = cap.get(cv2.CAP_PROP_FPS)
     fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
     size = (opt.fineSize, opt.fineSize)
     out = cv2.VideoWriter(opt.writename, fourcc, fps, size)
@@ -47,11 +48,12 @@ while(cap.isOpened()):
     model.set_input(data)
     model.test()
     time2 = time.time()
-    if(frame_num > 5):
+    if frame_num > 5:
         time_cost += time2- time1
     visuals = model.get_current_visuals()
-    image_numpy = visuals['fake_B']
-    out.write(image_numpy)
+    image_numpy = visuals['real_A']
+    if opt.writename:
+        out.write(image_numpy)
     if (opt.show_video):
         cv2.imshow('test', image_numpy)
         cv2.waitKey(1)

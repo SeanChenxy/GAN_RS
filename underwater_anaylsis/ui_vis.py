@@ -1,8 +1,11 @@
 import cv2
-import os
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy as np
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+from scipy.spatial import ConvexHull,Voronoi, voronoi_plot_2d
 
 dir_path = '../resultsD/underwater_pix2pix512_Res9Gmultibranch46D_selectDdcpL1a30lu5gan1_lsgan/test_65'
 path = dir_path+'/images/'
@@ -71,8 +74,29 @@ for j, file in enumerate(pre_list):
         print(image_name[i]+str(lab_bias)+', '+str(lab_var))
         ax = plt.subplot(2,2,i+2)
         ax.grid(True, which='both', alpha=0.2)
-        image_lab_resize = cv2.resize(image_lab, (128, 128))
-        plt.scatter(image_lab_resize[:,:,1]-0.5, image_lab_resize[:,:,2]-0.5)
+        image_lab_resize = cv2.resize(image_lab, (512, 512))
+        all_x = image_lab_resize[:,:,1]
+        all_y = image_lab_resize[:,:,2]
+        x = []
+        y = []
+        points = []
+        for j in range(512):
+            for k in range(512):
+                points.append(np.array([all_x[j,k]-0.5, all_y[j,k]-0.5]))
+                # x.append(all_x[j,k])
+                # y.append(all_y[j,k])
+        # print(np.array(points).shape)
+        points = np.array(points)
+        hull = ConvexHull(points)
+        # print(hull)
+        for simplex in hull.simplices:
+            plt.plot(points[simplex, 0], points[simplex, 1], c='orange', lw=3)
+        # plt.plot(points[hull.vertices, 0], points[hull.vertices, 1], c='orange', lw=2)
+        # plt.plot(points[hull.vertices[0], 0], points[hull.vertices[0], 1], 'ro')
+        # plt.scatter(x, y, c='orange', marker='.')
+
+        # plt.scatter(image_lab_resize[:,:,1]-0.5, image_lab_resize[:,:,2]-0.5, c='orange', s=0.5, marker='.')
+
         plt.xlim((-0.5, 0.5))
         plt.ylim((-0.5, 0.5))
         plt.xticks([-0.4,  0.4],['green', 'red'], fontsize=10)
