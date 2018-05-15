@@ -41,4 +41,5 @@ test/.coverage
 test/data/legacy_serialized.pt
 *~
 .idea/
-underwater_anaylsis/
+pic/
+pdf/
