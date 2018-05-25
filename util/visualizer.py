@@ -37,7 +37,7 @@ class Visualizer():
     def __init__(self, opt):
         self.display_id = opt.display_id
         self.use_html = opt.isTrain and not opt.no_html
-        self.win_size = opt.display_winsize
+        self.win_size = opt.fineSize
         self.name = opt.name
         self.opt = opt
         self.saved = False

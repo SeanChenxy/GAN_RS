@@ -43,6 +43,9 @@ class BaseOptions():
         self.parser.add_argument('--init_type', type=str, default='normal', help='network initialization [normal|xavier|kaiming|orthogonal]')
         self.parser.add_argument('--verbose', action='store_true', help='if specified, print more debugging information')
         self.parser.add_argument('--suffix', default='', type=str, help='customized suffix: opt.name = opt.name + suffix: e.g., {model}_{which_model_netG}_size{loadSize}')
+        ## UW
+        self.parser.add_argument('--n_layers_U', type=int, default=4, help='n_layers for underwater branch')
+
         self.initialized = True
 
     def parse(self):

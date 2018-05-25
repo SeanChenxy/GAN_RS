@@ -12,6 +12,10 @@ def create_model(opt):
         assert(opt.dataset_mode == 'single')
         from .test_model import TestModel
         model = TestModel()
+    elif opt.model == 'testD':
+        assert (opt.dataset_mode == 'aligned')
+        from .test_model_D import TestModelD
+        model = TestModelD()
     else:
         raise NotImplementedError('model [%s] not implemented.' % opt.model)
     model.initialize(opt)

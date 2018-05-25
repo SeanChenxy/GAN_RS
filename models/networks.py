@@ -3,6 +3,8 @@ import torch.nn as nn
 from torch.nn import init
 import functools
 from torch.optim import lr_scheduler
+import cv2
+import numpy as np
 
 ###############################################################################
 # Helper Functions
@@ -86,8 +88,8 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
     return init_net(netG, init_type, gpu_ids)
 
 
-def define_D(input_nc, ndf, which_model_netD,
-             n_layers_D=3, norm='batch', use_sigmoid=False, init_type='normal', gpu_ids=[]):
+def define_D(input_nc, ndf, which_model_netD, n_layers_D=4,
+             n_layers_U=3, norm='batch', use_sigmoid=False, init_type='normal', gpu_ids=[]):
     netD = None
     norm_layer = get_norm_layer(norm_type=norm)
 
@@ -97,6 +99,9 @@ def define_D(input_nc, ndf, which_model_netD,
         netD = NLayerDiscriminator(input_nc, ndf, n_layers_D, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
     elif which_model_netD == 'pixel':
         netD = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer, use_sigmoid=use_sigmoid)
+    elif which_model_netD == 'multibranch':
+        netD = MultiBranchDiscriminator(input_nc, ndf, n_layers_b1=n_layers_D, n_layers_b2=n_layers_U, norm_layer=norm_layer,
+                                   use_sigmoid=use_sigmoid)
     else:
         raise NotImplementedError('Discriminator model name [%s] is not recognized' %
                                   which_model_netD)
@@ -133,6 +138,90 @@ class GANLoss(nn.Module):
         target_tensor = self.get_target_tensor(input, target_is_real)
         return self.loss(input, target_tensor)
 
+class U_loss(nn.Module):
+    def __init__(self, D, fineSize, use_lsgan=True):
+        super(U_loss, self).__init__()
+        self.D = D
+        self.conv_size, self.critic = self.get_conv_size(fineSize)
+        self.final_size = self.conv_size.pop()
+        self.conv_size.reverse()
+        print(self.conv_size)
+        self.critic.reverse()
+        self.Umap0 = torch.zeros((self.final_size, self.final_size), requires_grad=False).cuda()
+        self.rf_map = np.zeros((self.final_size,self.final_size, 4)).astype(int)
+        for i in range(self.final_size):  #x
+            for j in range(self.final_size): #y
+                self.rf_map[i, j] = self.get_rf_original(i, j)
+        if use_lsgan:
+            self.loss = nn.MSELoss()
+        else:
+            self.loss = nn.BCELoss()
+
+    def get_conv_size(self, fineSize):
+        critic = []
+        for layer in list(self.D.trunk) + list(self.D.critic_branch):
+            if isinstance(layer, nn.Conv2d):
+                critic.append(layer)
+
+        conv_size = [fineSize, ]
+        in_size = conv_size[0]
+        for conv_layer in critic:
+            out_size = np.floor((in_size + 2*conv_layer.padding[0] - conv_layer.kernel_size[0])/conv_layer.stride[0] + 1)
+            conv_size.append(int(out_size))
+            in_size = out_size
+        return conv_size, critic
+
+    def receive_field(self, x, y, stride, padding, kernel_size):
+
+        x_min = (x - 1) * stride + 1 - padding
+        y_min = (y - 1) * stride + 1 - padding
+        x_max = (x - 1) * stride - padding + kernel_size
+        y_max = (y - 1) * stride - padding + kernel_size
+
+        return x_min, y_min, x_max, y_max
+
+    def get_rf_original(self, x, y):
+
+        x_min, y_min, x_max, y_max = x, y, x, y
+        for conv_layer, pre_feature_size in zip(self.critic, self.conv_size):
+            x_min, y_min, _, _ = self.receive_field(x_min, y_min, conv_layer.stride[0], conv_layer.padding[0], conv_layer.kernel_size[0])
+            _, _, x_max, y_max = self.receive_field(x_max, y_max, conv_layer.stride[0], conv_layer.padding[0], conv_layer.kernel_size[0])
+            x_min, y_min = max(0, x_min), max(0, y_min)
+            x_max, y_max = min(pre_feature_size, x_max), min(pre_feature_size, y_max)
+
+        return int(x_min), int(y_min), int(x_max), int(y_max)
+
+    def get_Umap(self, input):
+        underwater_index_batchmap = []
+        for instance in input:
+            # AorB = np.random.rand()
+            underwater_index_map = np.zeros((1, self.final_size, self.final_size))
+            image = cv2.normalize(instance.detach().cpu().float().numpy().transpose(1, 2, 0),
+                                       None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX).astype(np.uint8)
+            # image = image_cat[: ,:, 3:] if AorB>0.5 else image_cat[: ,:, :3]
+            image_lab = cv2.normalize(cv2.cvtColor(image, cv2.COLOR_RGB2Lab), None, alpha=0, beta=1,
+                          norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32FC3)
+
+            for i in range(self.final_size): #y
+                for j in range(self.final_size) : #x
+
+                    image_sub_l = image_lab[self.rf_map[j, i, 1]:self.rf_map[j, i, 3], self.rf_map[j, i, 0]:self.rf_map[j, i, 2], 0]
+                    image_sub_a = image_lab[self.rf_map[j, i, 1]:self.rf_map[j, i, 3], self.rf_map[j, i, 0]:self.rf_map[j, i, 2], 1]
+                    image_sub_b = image_lab[self.rf_map[j, i, 1]:self.rf_map[j, i, 3], self.rf_map[j, i, 0]:self.rf_map[j, i, 2], 2]
+                    lab_bias = np.sqrt(np.sqrt((np.mean(image_sub_a) - 0.5) ** 2 + (np.mean(image_sub_b) - 0.5) ** 2) / (0.5 * np.sqrt(2)))
+                    lab_var = (np.max(image_sub_a) - np.min(image_sub_a)) * (np.max(image_sub_b) - np.min(image_sub_b))
+                    lab_light = np.mean(image_sub_l)
+                    underwater_index_map[0, j, i] = lab_bias / (10*lab_var*lab_light)
+
+
+            underwater_index_batchmap.append(underwater_index_map)
+        with torch.no_grad():
+            Umap = torch.from_numpy(np.array(underwater_index_batchmap)).type(torch.cuda.FloatTensor)
+        return Umap
+
+    def __call__(self, image, pred_critic, model='G'):
+        Umap = self.Umap0.expand_as(pred_critic) if model == 'G' else self.get_Umap(image)
+        return self.loss(pred_critic, Umap)
 
 # Defines the generator that consists of Resnet blocks between a few
 # downsampling/upsampling operations.
@@ -380,3 +469,83 @@ class PixelDiscriminator(nn.Module):
 
     def forward(self, input):
         return self.net(input)
+
+
+# Defines the multi-branch discriminator with the specified arguments.
+class MultiBranchDiscriminator(nn.Module):
+    def __init__(self, input_nc, ndf=64, n_layers_b1=3, n_layers_b2=3, norm_layer=nn.BatchNorm2d, use_sigmoid=False):
+        super(MultiBranchDiscriminator, self).__init__()
+        if type(norm_layer) == functools.partial:
+            use_bias = norm_layer.func == nn.InstanceNorm2d
+        else:
+            use_bias = norm_layer == nn.InstanceNorm2d
+
+        kw = 4
+        padw = 1
+        self.trunk = nn.Sequential(
+            nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw),
+            nn.LeakyReLU(0.2, True) )
+        ## ad_branch
+        nf_mult = 1
+        nf_mult_prev = 1
+        ad_branch = []
+        for n in range(1, n_layers_b1):
+            nf_mult_prev = nf_mult
+            nf_mult = min(2**n, 8)
+            ad_branch += [
+                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
+                          kernel_size=kw, stride=2, padding=padw, bias=use_bias),
+                norm_layer(ndf * nf_mult),
+                nn.LeakyReLU(0.2, True)
+            ]
+
+        nf_mult_prev = nf_mult
+        nf_mult = min(2**n_layers_b1, 8)
+        ad_branch += [
+            nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
+                      kernel_size=kw, stride=1, padding=padw, bias=use_bias),
+            norm_layer(ndf * nf_mult),
+            nn.LeakyReLU(0.2, True)
+        ]
+
+        ad_branch += [nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]
+
+        if use_sigmoid:
+            ad_branch += [nn.Sigmoid()]
+
+        self.ad_branch = nn.Sequential(*ad_branch)
+
+        ## critic_branch
+        nf_mult = 1
+        nf_mult_prev = 1
+        critic_branch = []
+        for n in range(1, n_layers_b2):
+            nf_mult_prev = nf_mult
+            nf_mult = min(2 ** n, 8)
+            critic_branch += [
+                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
+                          kernel_size=kw, stride=2, padding=padw, bias=use_bias),
+                norm_layer(ndf * nf_mult),
+                nn.LeakyReLU(0.2, True)
+            ]
+
+        nf_mult_prev = nf_mult
+        nf_mult = min(2 ** n_layers_b1, 8)
+        critic_branch += [
+            nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
+                      kernel_size=kw, stride=1, padding=padw, bias=use_bias),
+            norm_layer(ndf * nf_mult),
+            nn.LeakyReLU(0.2, True)
+        ]
+
+        critic_branch += [nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]
+
+        if use_sigmoid:
+            critic_branch += [nn.Sigmoid()]
+
+        self.critic_branch = nn.Sequential(*critic_branch)
+
+    def forward(self, input):
+        x = self.trunk(input)
+        return self.ad_branch(x), self.critic_branch(x)
+

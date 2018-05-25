@@ -53,7 +53,7 @@ class BaseModel():
     def get_image_paths(self):
         return self.image_paths
 
-    def optimize_parameters(self):
+    def optimize_parameters(self, epoch=0):
         pass
 
     # update learning rate (called once every epoch)
