@@ -139,15 +139,15 @@ class GANLoss(nn.Module):
         return self.loss(input, target_tensor)
 
 class U_loss(nn.Module):
-    def __init__(self, D, fineSize, use_lsgan=True):
+    def __init__(self, D, fineSize, use_lsgan=True, device=torch.device('cpu')):
         super(U_loss, self).__init__()
+        self.device = device
         self.D = D
         self.conv_size, self.critic = self.get_conv_size(fineSize)
         self.final_size = self.conv_size.pop()
         self.conv_size.reverse()
-        print(self.conv_size)
         self.critic.reverse()
-        self.Umap0 = torch.zeros((self.final_size, self.final_size), requires_grad=False).cuda()
+        self.Umap0 = torch.zeros((self.final_size, self.final_size), requires_grad=False).to(self.device)
         self.rf_map = np.zeros((self.final_size,self.final_size, 4)).astype(int)
         for i in range(self.final_size):  #x
             for j in range(self.final_size): #y
@@ -216,7 +216,7 @@ class U_loss(nn.Module):
 
             underwater_index_batchmap.append(underwater_index_map)
         with torch.no_grad():
-            Umap = torch.from_numpy(np.array(underwater_index_batchmap)).type(torch.cuda.FloatTensor)
+            Umap = torch.from_numpy(np.array(underwater_index_batchmap)).type(torch.FloatTensor).to(self.device)
         return Umap
 
     def __call__(self, image, pred_critic, model='G'):

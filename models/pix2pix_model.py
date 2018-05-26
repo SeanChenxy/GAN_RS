@@ -2,6 +2,7 @@ import torch
 from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
+import numpy as np
 
 
 class Pix2PixModel(BaseModel):
@@ -25,7 +26,7 @@ class Pix2PixModel(BaseModel):
                                       opt.which_model_netG, opt.norm, not opt.no_dropout, opt.init_type, self.gpu_ids)
 
         if self.isTrain:
-            use_sigmoid = opt.no_lsgan
+            use_sigmoid = True#opt.no_lsgan
             self.netD = networks.define_D(opt.input_nc + opt.output_nc, opt.ndf,
                                           opt.which_model_netD,
                                           opt.n_layers_D, opt.n_layers_U, opt.norm, use_sigmoid, opt.init_type, self.gpu_ids)
@@ -37,7 +38,7 @@ class Pix2PixModel(BaseModel):
             self.criterionGAN = networks.GANLoss(use_lsgan=not opt.no_lsgan).to(self.device)
             self.criterionL1 = torch.nn.L1Loss()
             if self.multibranch:
-                self.criterionU = networks.U_loss(self.netD.module, use_lsgan=not opt.no_lsgan, fineSize=opt.fineSize).to(self.device)
+                self.criterionU = networks.U_loss(self.netD.module, use_lsgan=not opt.no_lsgan, fineSize=opt.fineSize, device=self.device).to(self.device)
                 self.loss_names += ['G_U', 'D_U']
             # initialize optimizers
             self.optimizers = []
@@ -58,6 +59,8 @@ class Pix2PixModel(BaseModel):
         self.fake_B = self.netG(self.real_A)
 
     def backward_D(self):
+        # gan_select = np.random.rand()
+        # if gan_select > 0.5:
         # Fake
         # stop backprop to the generator by detaching fake_B
         fake_AB = self.fake_AB_pool.query(torch.cat((self.real_A, self.fake_B), 1))
@@ -67,23 +70,20 @@ class Pix2PixModel(BaseModel):
         else:
             pred_fake = self.netD(fake_AB.detach())
         self.loss_D_fake = self.criterionGAN(pred_fake, False)
-
         # Real
         real_AB = torch.cat((self.real_A, self.real_B), 1)
         if self.multibranch:
-            pred_real, pred_critic_real = self.netD(fake_AB.detach())
+            pred_real, pred_critic_real = self.netD(real_AB.detach())
             self.loss_D_real_u = self.criterionU(self.real_B, pred_critic_real, model='D')
         else:
             pred_real = self.netD(real_AB)
         self.loss_D_real = self.criterionGAN(pred_real, True)
 
         # Combined loss
+        self.loss_D = (self.loss_D_fake + self.loss_D_real) * 0.5 * self.opt.lambda_GAN
         if self.multibranch:
             self.loss_D_U = (self.loss_D_fake_u + self.loss_D_real_u) * 0.5
-            self.loss_D = (self.loss_D_fake + self.loss_D_real) * 0.5 * self.opt.lambda_GAN + self.loss_D_U * self.opt.lambda_U
-        else:
-            self.loss_D = (self.loss_D_fake + self.loss_D_real) * 0.5 * self.opt.lambda_GAN
-
+            self.loss_D += self.loss_D_U * self.opt.lambda_U
         self.loss_D.backward()
 
     def backward_G(self, epoch=0):
