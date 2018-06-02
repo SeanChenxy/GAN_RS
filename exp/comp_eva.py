@@ -6,6 +6,9 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 from scipy.special import comb
 import pandas as pd
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 def convertToHtml(result, title):
 
@@ -20,7 +23,7 @@ def convertToHtml(result, title):
     return h
 
 # dir_path = './resultsD/underwater_pix2pix512_Res9Gmultibranch46D_selectDdcpL1a30lu5gan1_lsgan/test_65'
-dir_path = './compare'
+dir_path = './pic/compare'
 path =  dir_path + '/Images/'
 write_file_name = dir_path+'/test.txt'
 write_html_name = dir_path+'/test_html.html'
@@ -59,9 +62,10 @@ H_std_list = []
 S_ave_list = []
 ave_list = []
 
-file_list = ['Ancuti_1', 'Ancuti_3', 'Ancuti_5', 'Im_5', 'Bali_1', 'Bali_2', 'Eustice_4', 'Q9_352',
-             'Video3_97', 'Video10_5741', 'Z1_5841']
-method_name_list = ['Original', 'GW', 'PB', 'CLAHE', 'DM', 'CM', 'RBLA', 'CycleGAN', 'pix2pix', 'FRS', 'GAN-RS']
+file_list = ['Ancuti_1', 'Ancuti_3', 'Im_5', 'Bali_2', 'Eustice_4', 'Q9_352', 'Z1_5841']
+# file_list = ['Ancuti_1', 'Ancuti_3', 'Ancuti_5', 'Im_5', 'Bali_1', 'Bali_2', 'Eustice_4', 'Q9_352',
+#              'Video3_97', 'Video10_5741', 'Z1_5841']
+method_name_list = ['Origin', 'GW', 'PB', 'CLAHE', 'DM', 'CM', 'RBLA', 'CycleGAN', 'pix2pix', 'FRS', 'GAN-RS']
 
 gs = gridspec.GridSpec(len(method_name_list), len(file_list))
 with open(write_file_name, 'w') as f:
@@ -304,14 +308,14 @@ for i, ave_name in enumerate(ave_name_list):
     canny_ave_list = canny_ratio_list[i:step * (final) + i:step]
     canny_ratio_list.append(np.around(np.mean(canny_ave_list), decimals=2))
 
-with open(write_html_name, 'w') as ht:
-    result = [image_name_list, lab_bias_list, lab_var_list, ui_list, laplacian_gradient_list, entropy_list,
-              sift_num_list, harris_num_list, canny_ratio_list
-              ]
-    title = ['Image name', 'Lab bias', 'Lab variation', 'UI',
-             'Laplance gradient', 'Entropy',
-             'SIFT points', 'Harris points', 'Edge ratio'
-             ]
-    ht.write(convertToHtml(result, title))
+# with open(write_html_name, 'w') as ht:
+#     result = [image_name_list, lab_bias_list, lab_var_list, ui_list, laplacian_gradient_list, entropy_list,
+#               sift_num_list, harris_num_list, canny_ratio_list
+#               ]
+#     title = ['Image name', 'Lab bias', 'Lab variation', 'UI',
+#              'Laplance gradient', 'Entropy',
+#              'SIFT points', 'Harris points', 'Edge ratio'
+#              ]
+#     ht.write(convertToHtml(result, title))
 
 plt.show()

@@ -193,6 +193,7 @@ class GANLoss(nn.Module):
         for i in range(self.final_feature_size):  #x
             for j in range(self.final_feature_size): #y
                 self.rf_map[i, j] = self.get_rf_original(i, j)
+        print(self.rf_map[4, 3])
 
     def receive_field(self, x, y, stride, padding, kernel_size):
 

@@ -3,6 +3,9 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy as np
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 dir_path = '../resultsD/underwater_pix2pix512_Res9Gmultibranch46D_selectDdcpL1a30lu5gan1_lsgan/test_65'
 path = dir_path + '/images/'
@@ -31,7 +34,7 @@ for j, file in enumerate(image_name_list):
     # cv2.imshow('test', real_A)
     # cv2.waitKey(0)
     image_list = [real_A, real_B, fake_B, ad_real, ad_fake, ui_real, ui_fake]
-    name_list = ['Origin', 'FRS', 'GAN-RS', 'FRS Ad-map', 'GAN-RS Ad-map', 'FRS U-map', 'GAN-RS U-map']
+    name_list = ['Origin', 'FRS', 'GAN-RS', 'FRS: ad-map', 'GAN-RS: ad-map', 'FRS: U-map', 'GAN-RS: U-map']
     for i, img in enumerate(image_list):
         # if i<3:
         ax = plt.subplot(gs[j, i])

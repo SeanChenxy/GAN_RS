@@ -1,10 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
 font_label = {'family' : 'Arial',
         'color'  : 'black',
         'weight' : 'normal',
-        'size'   : 12,
+        'size'   : 14,
         }
 
 loss_file = '../checkpoints/Compare/underwater_pix2pix512_Res9Gmultibranch46D_selectDdcpL1a30lu5gan1_lsgan/loss_log.txt'
@@ -46,36 +50,41 @@ lit = np.linspace(0, stop_eopch+1, len(G_GAN))
 
 ax=plt.subplot(1,1,1)
 ax.grid(True, which='both', alpha=0.2)
-plt.plot(lit, G_GAN, color='crimson',alpha=0.5)
+plt.plot(lit, G_GAN, color='crimson',alpha=0.2)
 G_GAN_plt, =plt.plot(lit, G_GAN_ave, color='crimson', linewidth=2.0)
-plt.xlim(0,stop_eopch)
-plt.xlabel('epoch',)
-plt.ylabel('loss',fontdict=font_label)
+# plt.xlim(0,stop_eopch)
+# plt.xticks(fontsize=14)
+# plt.yticks(fontsize=14)
+# plt.xlabel('epoch',fontdict=font_label)
+# plt.ylabel('loss',fontdict=font_label)
 # plt.legend([G_GAN_plt], [r'$G$:$\mathcal{L}_{lscGAN}$'], loc='upper right', fontsize=12)
 
 # ax=plt.subplot(4,1,2)
 # ax.grid(True, which='both', alpha=0.2)
-plt.plot(lit, D_fake,color='green',alpha=0.5)
+plt.plot(lit, D_fake,color='green',alpha=0.2)
 D_GAN_plt, = plt.plot(lit, D_fake_ave, color='green',linewidth=2.0)
-plt.xlim(0,stop_eopch)
-plt.xlabel('epoch',fontdict=font_label)
-plt.ylabel('loss',fontdict=font_label)
-plt.legend([G_GAN_plt, D_GAN_plt], ['G', 'D'], loc='upper right',fontsize=12)
+# plt.xlim(0,stop_eopch)
+# plt.xlabel('epoch',fontdict=font_label)
+# plt.ylabel('loss',fontdict=font_label)
+# plt.legend([G_GAN_plt, D_GAN_plt], ['G', 'D'], loc='upper right',fontsize=12)
 
-plt.figure()
-ax=plt.subplot(1,1,1)
-ax.grid(True, which='both', alpha=0.2)
-plt.plot(lit, G_underwater,color='blue',alpha=0.5)
+# plt.figure()
+# ax=plt.subplot(1,1,1)
+# ax.grid(True, which='both', alpha=0.2)
+plt.plot(lit, G_underwater,color='blue',alpha=0.2)
 G_underwater_plt, = plt.plot(lit, G_UI_ave, color='blue',linewidth=2.0)
-plt.xlim(0,stop_eopch)
+# plt.xlim(0,stop_eopch)
 plt.xlabel('epoch', fontdict=font_label)
 plt.ylabel('loss', fontdict=font_label)
 
-plt.plot(lit, D_underwater, color='m', alpha=0.5)
+plt.plot(lit, D_underwater, color='m', alpha=0.2)
 D_underwater_plt, = plt.plot(lit, D_UI_ave, color='m',linewidth=2.0)
 plt.xlim(0,stop_eopch)
+plt.ylim(0,1.5)
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
 plt.xlabel('epoch', fontdict=font_label)
 plt.ylabel('loss', fontdict=font_label)
-plt.legend([G_underwater_plt, D_underwater_plt], ['G', 'D'], loc='upper right',fontsize=12)
+plt.legend([G_GAN_plt, D_GAN_plt, G_underwater_plt, D_underwater_plt], [r'$G:ad\_loss$', r'$D:ad\_loss$',r'$G:U\_loss$', r'$D:U\_loss$'], loc='upper right',fontsize=12)
 
 plt.show()

@@ -13,12 +13,12 @@ path = dir_path+'/images/'
 font_title = {'family' : 'Arial',
         'color'  : 'black',
         'weight' : 'normal',
-        'size'   : 14,
+        'size'   : 18,
         }
 font_label = {'family' : 'Arial',
         'color'  : 'black',
         'weight' : 'normal',
-        'size'   : 10,
+        'size'   : 14,
         }
 gs = gridspec.GridSpec(2, 2)
 # pre_list = ['Video4_304', 'Ancuti_1', 'Q9_922', 'Z1_2811']
@@ -90,7 +90,7 @@ for j, file in enumerate(pre_list):
         hull = ConvexHull(points)
         # print(hull)
         for simplex in hull.simplices:
-            plt.plot(points[simplex, 0], points[simplex, 1], c='orange', lw=3)
+            plt.plot(points[simplex, 0], points[simplex, 1], c='orange', lw=5)
         # plt.plot(points[hull.vertices, 0], points[hull.vertices, 1], c='orange', lw=2)
         # plt.plot(points[hull.vertices[0], 0], points[hull.vertices[0], 1], 'ro')
         # plt.scatter(x, y, c='orange', marker='.')
@@ -102,16 +102,18 @@ for j, file in enumerate(pre_list):
         plt.xticks([-0.4,  0.4],['green', 'red'], fontsize=10)
         plt.yticks([-0.4,  0.4], ['blue', 'yellow'], fontsize=10)
         if i==0:
-            ax.set_title('Original frame: U='+str(ui), fontdict=font_label)
+            ax.set_title('Origin: '+r'$U$'+'='+str(ui), fontdict=font_label)
         elif i==1:
-            ax.set_title('FRS: U='+str(ui), fontdict=font_label)
+            ax.set_title('FRS: '+r'$U$'+'='+str(ui), fontdict=font_label)
         else:
-            ax.set_title('GAN-RS: U='+str(ui), fontdict=font_label)
+            ax.set_title('GAN-RS: '+r'$U$'+'='+str(ui), fontdict=font_label)
         ax.spines['right'].set_color('none')
         ax.spines['top'].set_color('none')
         ax.xaxis.set_ticks_position('bottom')
         ax.spines['bottom'].set_position(('data',0))
         ax.yaxis.set_ticks_position('left')
         ax.spines['left'].set_position(('data',0))
+        plt.xticks(fontsize=14)
+        plt.yticks(fontsize=14)
 plt.show()
 
