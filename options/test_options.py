@@ -10,4 +10,6 @@ class TestOptions(BaseOptions):
         self.parser.add_argument('--phase', type=str, default='test', help='train, val, test, etc')
         self.parser.add_argument('--which_epoch', type=str, default='latest', help='which epoch to load? set to latest to use latest cached model')
         self.parser.add_argument('--how_many', type=int, default=50, help='how many test images to run')
+        self.parser.add_argument('--show_video', action='store_true', help='Whether show fake video or not')
+        self.parser.add_argument('--writename', type=str, default=None, help='The name to write video')
         self.isTrain = False
