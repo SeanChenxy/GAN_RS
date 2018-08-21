@@ -24,6 +24,7 @@ if __name__ == '__main__':
     for i, data in enumerate(dataset):
         if i >= opt.how_many:
             break
+        print(data['A'].size())
         model.set_input(data)
         model.test()
         visuals = model.get_current_visuals()
