@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-CUDA_VISIBLE_DEVICES='4,5' python ../test_video.py \
---dataroot /home/sean/data/UWdevkit/2017/Data/snippets/2.MP4 \
+CUDA_VISIBLE_DEVICES='3' python ../test_video.py \
+--dataroot /data/UWdevkit/snippets/2.MP4 \
 --name underwater_pix2pix512_Res9Gmultibranch46D_selectDdcpL1a30lu5gan1_lsgan \
 --model test \
 --which_model_netG 'resnet_9blocks' \
@@ -14,4 +14,4 @@ CUDA_VISIBLE_DEVICES='4,5' python ../test_video.py \
 --fineSize 512 \
 --gpu_id '0' \
 --show_video
-#--writename ../datasets/underwater/Video/2_realA.mp4 \
+#--writename /data/UWdevkit/snippets/FrameByFrame/trepang/trepang_fakeB.mp4

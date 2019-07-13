@@ -48,6 +48,8 @@ while(cap.isOpened()):
     image_numpy = util.tensor2im(visuals['fake_B'])
     if opt.writename:
         out.write(image_numpy)
+        out_dir_ind = opt.writename[::-1].index('/')
+        cv2.imwrite(opt.writename[:-out_dir_ind]+str(frame_num).zfill(10)+'.jpg', image_numpy)
     if opt.show_video:
         cv2.imshow('test', image_numpy)
         cv2.waitKey(1)
