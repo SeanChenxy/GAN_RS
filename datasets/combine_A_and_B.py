@@ -33,16 +33,16 @@ for sp in splits:
         name_A = img_list[n]
         path_A = os.path.join(img_fold_A, name_A)
         if args.use_AB:
-            name_B = name_A.replace('_A.', '_B.')
+            name_B = name_A.replace('real_A.', 'fake_B.')
         else:
             name_B = name_A
         path_B = os.path.join(img_fold_B, name_B)
         if os.path.isfile(path_A) and os.path.isfile(path_B):
             name_AB = name_A
             if args.use_AB:
-                name_AB = name_AB.replace('_A.', '.') # remove _A
+                name_AB = name_AB.replace('_real_A.', '.') # remove _A
             path_AB = os.path.join(img_fold_AB, name_AB)
-            im_A = cv2.imread(path_A, cv2.CV_LOAD_IMAGE_COLOR)
-            im_B = cv2.imread(path_B, cv2.CV_LOAD_IMAGE_COLOR)
+            im_A = cv2.imread(path_A, 1)
+            im_B = cv2.imread(path_B, 1)
             im_AB = np.concatenate([im_A, im_B], 1)
             cv2.imwrite(path_AB, im_AB)

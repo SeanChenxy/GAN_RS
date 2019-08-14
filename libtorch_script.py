@@ -11,9 +11,11 @@ opt.nThreads = 1   # test code only supports nThreads = 1
 opt.batchSize = 1  # test code only supports batchSize = 1
 opt.serial_batches = True  # no shuffle
 opt.no_flip = True  # no flip
-opt.name = 'underwater_pix2pix512_Res9Gmultibranch46D_selectDdcpL1a30lu5gan1_lsgan'
+# opt.name = 'underwater_pix2pix512_Res9Gmultibranch46D_selectDdcpL1a30lu5gan1_lsgan'
+opt.name = 'UW_pix2pix256_unet128'
 opt.model = 'test'
-opt.which_model_netG ='resnet_9blocks'
+# opt.which_model_netG ='resnet_9blocks'
+opt.which_model_netG ='unet_128'
 opt.which_direction = 'AtoB'
 opt.dataset_mode = 'single'
 opt.norm = 'batch'
@@ -39,19 +41,19 @@ with torch.no_grad():
         print(output.size())
         script_module.save("./results/netG.pt")
     elif phase == 'eval':
-        # model = create_model(opt)
-        # model.setup(opt)
+        model = create_model(opt)
+        model.setup(opt)
         # model.eval()
-        # script_module = model.netG.module
-        script_module = torch.jit.load('./results/netG.pt')
+        script_module = model.netG.module
+        # script_module = torch.jit.load('./results/netG.pt')
         script_module = script_module.cuda()
-        cap = cv2.VideoCapture('/data/UWdevkit/snippets/10.MP4')
+        cap = cv2.VideoCapture('/data/UWdevkit/snippets/2.MP4')
         cap.set(cv2.CAP_PROP_POS_FRAMES, 100)
         while(cap.isOpened()):
             ret, frame = cap.read()
             if ret == False:
                 break
-            print(script_module.model._modules['2'].bias.mean())
+            # print(script_module.model._modules['2'].bias.mean())
             data_resize = cv2.resize(frame, (opt.fineSize, opt.fineSize))
 
             data_np = cv2.normalize(data_resize, None,alpha=-1, beta=1, norm_type=cv2.NORM_MINMAX,
